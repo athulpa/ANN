@@ -13,7 +13,7 @@ class ANN:
         self.theta = [ ]
         self.activation = ANN.sigmoid
         for i in range(self.num_layers-1):
-            self.theta.append(np.random.random((sl[i+1], sl[i]+1)))
+            self.theta.append(np.random.random((sl[i+1], sl[i]+1))-0.5)
 #            self.theta = [np.array([[-25,   5,   5,  20,  20],
 #                                    [-25,  20,  20,   5,   5]], dtype=np.float64), np.array([[-10,  20,  20]], dtype=np.float64)]
         return
@@ -97,7 +97,3 @@ class ANN:
             self.theta[i] -= alpha*Dtmp
         return
 
-
-
-        
-                    
