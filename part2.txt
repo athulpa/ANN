@@ -1,0 +1,367 @@
+\documentclass[a4paper]{article}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+
+\usepackage{flafter}
+\usepackage{float}
+\usepackage{multirow}
+\usepackage{multicol}
+
+\title{PART II \\ Logistic Regression}
+
+\date{\vspace{-5ex}}
+
+\begin{document}
+\maketitle
+
+\begin{description}
+\centering \item[DATASET USED:] Iris Flower Dataset
+\end{description}
+
+
+\section{Preview of Logistic Regression?}
+Logistic regression is a widely used classification technique in Machine Learning. 
+
+Logistic Regression is natively suited to binary classification problems, but certain variaitons have been developed that extend its applicability beyond 2-class problems.
+
+It has a relatively modest number of parameters – just one parameter for every input feature – making for a very simple model; it is not suited to complex classification tasks. However, by using a simple model such as this, the risk of overfitting the data is eliminated. In addition, model simplicity also saves processing power which results in faster development of the model.
+
+In the logistic model, we group each set of inputs into an input vector and further gather all the parameters of the model into another parameter vector. We begin by taking the dot product of the input vector and the parameter vector. This dot product is passed through the logistic function to get the final output of the model – always a real number between 0 and 1. A mathematical explanation can be found in [[insert section number]]
+
+
+\setlength{\abovedisplayskip}{3pt}
+\setlength{\belowdisplayskip}{3pt}
+\begin{equation}
+f(x) = \frac{1}{1+e^{-x}}
+\label{eq:logit}
+\end{equation}
+\vspace{-3ex}
+
+\section{Mathematical Description and Notation}
+ 
+\begin{align*}
+    X &= [X_1, X_2, X_3, \dots] & are\,the\,inputs\,to\,the\,model\\\\
+    \theta &= [\theta_0, \theta_1, \theta_2, \dots] & are\,the\,parameters\,of\,the\,model\\\\
+   X &= [X_0=1 : X_1, X_2, X_3, \dots] & are\,the\,parameters\,of\,the\,model\\\\
+   Z &= X\cdot\theta & take\,the\,dot\,product\\\\
+   h &= \frac{1}{1+e^{-Z}} & output\,is\,the\,sigmoid\,function\,of\,Z
+\end{align*}
+
+
+\section{Training The Model}
+\subsection{What is Training?}
+In classification, the function of any model is to take a set of inputs and predict some output values that decide which class the input example belongs to. In binary classification though, it predicts just a single output, typically between 0 and 1.
+
+In order to accomplish this, the model has some parameters that the input is computed with. Thus, the value of the parameters defines wholly what the output is going to be for every input shown to the model. 
+
+The task of training (called fitting the model) is to tune these parameters such that the model can accurately distinguish between inputs of different classes. 
+Hence, labelled data - data for which the correct outputs are known - is fed into the model and the model's predictions on each of these data are calculated. Then a cost function is to be used \dots
+
+\subsection{Cost Function} \label{costfunction}
+The Cost Function measures the error in classifying using a given model. The more the predictions correlate with the actual labels, the lesser should be the value of the cost function.
+
+Thus, the task of fitting the model accurately is accomplished by monitoring the cost function and reducing it’s value by adjusting the model's parameters. Therefore, the cost function should also suggest which way to tune each of the parameters of our model.
+
+For logistic regression, the following cost function is used:
+
+$$
+J(h_\theta(x), y)=
+\begin{cases}
+-log(h_\theta(x)) , & \text{if y = 1}\\
+-log(1-h_\theta(1-x)), & \text{if y = 0},
+\end{cases}
+$$
+
+
+Since the behavior of the function is defined piecewise, its shape is as shown in figures \ref{fig:logitcf1} \& \ref{fig:logitcf0}. It is apparent that the function's tendency is towards zero as the prediction tends toward 1, in figure \ref{fig:logitcf1} where the true label is 1, or as the prediction tends toward 0, in figure \ref{fig:logitcf0} where the true label is 0.
+
+
+\begin{figure}[hbp]
+\centering
+\includegraphics[width=0.3\textwidth]{logit_CF_y1.png}
+\caption{\label{fig:logitcf1}Logistic Cost Function when y=1}
+\end{figure}
+
+\begin{figure}[hbp]
+\centering
+\includegraphics[width=0.3\textwidth]{logit_CF_y0.png}
+\caption{\label{fig:logitcf0}Logistic Cost Function when y=0}
+\end{figure}
+
+The parameters of the model are tuned in a manner that minimizes the cost function. This is achieved with an optimization algorithm...
+
+\subsection{Gradient Descent – The Cost Minimization Algorithm}
+Gradient Descent is a first-order iterative minimization algorithm for finding the minimum of a function. It is based on the following observation: That if a multivariate function F(X) is defined and differentiable in the neighbourhood of a point 'a', then it decreases fastest in the direction opposite the gradient of F at 'a', i.e. \hspace{5pt} - $\nabla$ F(a).
+
+So in every step, moves a distance proportional to the local gradient, in a direction opposite to the gradient. This results in the following update step: 
+\begin{equation}
+\label{eq:GDupdate}
+a_{n+1} = a_n - \alpha\nabla F(a_n)    
+\end{equation}
+
+
+$\alpha$ is called the Learning Rate. It scales the length covered in every step and hence, it defines how fast the optimization proceeds.\bigskip \\
+The reasoning behind this update step is as follows:
+
+\textit{ Since the cost decreases in every step, and since the update step converges only when the gradient = 0, the point would converge on a minimum fairly quickly.}
+
+However, there are 2 main caveats to this reasoning:
+\begin{itemize}
+    \item The minimum that is converged on may be just a local minimum.
+    \item If $\alpha$ is too large, an update might skip over a minimum and cause a cost increase
+\end{itemize}
+
+\subsection{Gradient Descent Applied to Logistic Regression}
+The cost function, J(Th) from Section \ref{costfunction} is rewritten as:
+\begin{equation}
+    J(\theta) = -y\log(h_\theta(X)) - (1-y)\log(1-h_\theta(X))
+\label{eq:logitcost}
+\end{equation}
+This form makes it readily differentiable. 
+
+\textit{Note: J is a function of $\theta$ here since $\theta$ are the variables in optimizing J} \\
+
+Hence, 
+$$ \frac{\partial J}{\partial \theta_j} = \frac{\partial [1-y\log(h_\theta(X)) - (1-y)\log(1-h_\theta(X))]}{\partial \theta_j} $$ \\
+
+Replacing $h_\theta(X)$ using Equation \ref{eq:logit},
+$$ \frac{\partial J}{\partial \theta_j} = \frac{\partial [1-y\log(\frac{1}{1+e^{-\theta^Tx}}) - (1-y)\log(1-\frac{1}{1+e^{-\theta^Tx}})]}{\partial \theta_j} $$ \\
+
+On simplifying and differentiating,
+$$ \frac{\partial J}{\partial \theta_j} = (h_\theta(X) - y)x_j $$ \\
+
+Averaged over m examples,
+$$ \frac{\partial J}{\partial \theta_j} = \frac{1}{m}\sum_{i=1}^m (h_\theta(X) - y)x_j $$ \\
+
+Thus, from Equation \ref{eq:GDupdate},
+\begin{equation} \label{eq:logitupdate}
+     \theta_j := \theta_j - \frac{\alpha}{m}\sum_{i=1}^m (h_\theta(X) - y)x_j 
+\end{equation}
+\\
+
+\textbf{Equation \ref{eq:logitupdate} is the final update step used in Logistic Regression.}
+
+
+\section{The One v Rest Approach to Classification}
+Although the data we have chosen contains three classes of inputs, the logistic regression model is best suited for binary classification problems. Hence, we need to convert a ternary classification problem into this form. This is achieved using one-vs-rest classification, where we classify each example as belonging to one particular class (label ‘ONE’) vs not belonging to that class (label ‘REST’). This class needs to be chosen beforehand and typically, the choice of this class influences the ease of classification. The OnevRest approach can be used to easily convert an n-class problem to a 2-class one, so that Logistic Regression becomes possible.
+
+Further, OnevRest approach also suggests a method to run logistic regression on a fully multi-class problem. This method is commonly used for the logistic technique; however, it will not be explored in this project. If there are C classes, we would design C classifiers, each of which determines whether the input example belongs to one  of the C classes or not, a la OnevRest. Then, by comparing the classification scores of the C classifiers, we select the best class that the example would fall into. From previous analysis of the Iris Data Set
+
+Since the Iris Dataset has three classes of inputs, there are three ways to implement One v Rest classification – each one classifying a specific class vs the rest.
+
+\section{Experiment 1}
+\subsection{Objective}
+To train logistic regression classifiers on the Iris dataset using the One v Rest approach
+\subsection{Procedure}
+
+
+\begin{itemize}
+\item[\textasteriskcentered] 3 Classifiers were trained to respectively distinguish between \textit{Iris setos}a and the rest, \textit{Iris virginica} and the rest, \textit{Iris versicolor} and the rest.
+
+\item[\textasteriskcentered] Data was loaded from Iris.csv and no pre-processing was done apart from that required for One v Rest. The data was divided, in each case, into an 80:20 ratio of training:testing data.
+
+\item[\textasteriskcentered] The model's parameters were initialized to all 0's and trained for 10k iterations using Logistic Regression
+
+\item[\textasteriskcentered] Hyperparameters: $\alpha$ = 0.1; \; regularization was not used.
+
+\item[\textasteriskcentered] The Cost was monitored after every iteration and the graph of Cost-vs-Iterations was plotted every time.
+\end{itemize}
+
+\subsection{\textit{Iris setosa} v Rest Classifier}
+\subsubsection{Observed Data}
+\underline{\textbf{From Training}}\\\\
+Initial Cost = 66.23 \hspace{12pt} Final Cost = 0.066\\\\
+\underline{\textbf{From Testing}}\\\\
+Correct Examples: 30/30  (100\%)\\
+Incorrect Examples 0/30  (0\%)\\\\
+
+\begin{tabular}{l|l|c|c|c}
+\multicolumn{2}{c}{}&\multicolumn{2}{c}{True Class}&\\
+\cline{3-4}
+\multicolumn{2}{c|}{}&One&Rest&\multicolumn{1}{c}{Total}\\
+\cline{2-4}
+\multirow{2}{*}{Predicted Class} & One & $10$ & $0$ & $10$\\
+\cline{2-4}
+& Rest & $0$ & $20$ & $20$\\
+\cline{2-4}
+\multicolumn{1}{c}{} & \multicolumn{1}{c}{Total} & \multicolumn{1}{c}{$10$} & \multicolumn{1}{c}{$20$} & \multicolumn{1}{c}{$30$}\\
+\end{tabular}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{1k_logitVan_setosa.png}
+    \caption{Graph of first 1k iterations of training}
+    \label{fig:1k_logitVan_setosa}
+\end{figure}
+
+\subsubsection{Conclusions}
+\begin{itemize}
+\item[\textasteriskcentered] The cost reduces sharply for the first few iterations but slowly for later iterations.
+\item[\textasteriskcentered] The Cost plateaus out after a few hundred iterations, and it does not tend to zero.
+\item[\textasteriskcentered] The Cost consistently falls after every iteration, although the fall is less later on.
+\end{itemize}
+
+\subsection{\textit{Iris virginica} v Rest Classifier}
+\subsubsection{Observed Data}
+\underline{\textbf{From Training}}\\\\
+Initial Cost = 78.147; \hspace{12pt} Final Cost = 8.77\\\\
+\underline{\textbf{From Testing}}\\\\
+Correct Examples: 29/30  (97\%)\\
+Incorrect Examples 1/30  (3\%)\\\\
+
+\begin{tabular}{l|l|c|c|c}
+\multicolumn{2}{c}{}&\multicolumn{2}{c}{True Class}&\\
+\cline{3-4}
+\multicolumn{2}{c|}{}&One&Rest&\multicolumn{1}{c}{Total}\\
+\cline{2-4}
+\multirow{2}{*}{Predicted Class} & One & $10$ & $0$ & $10$\\
+\cline{2-4}
+& Rest & $1$ & $19$ & $20$\\
+\cline{2-4}
+\multicolumn{1}{c}{} & \multicolumn{1}{c}{Total} & \multicolumn{1}{c}{$11$} & \multicolumn{1}{c}{$19$} & \multicolumn{1}{c}{$30$}\\
+\end{tabular}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{1k_logitVan_virginica.png}
+    \caption{Graph of first 1k iterations of training}
+    \label{fig:1k_logitVan_virginica}
+\end{figure}
+
+\subsubsection{Conclusions}
+\begin{itemize}
+\item[\textasteriskcentered] The cost falls quickly for the first iterations, but not as quickly as for \textit{Iris setosa}.
+\item[\textasteriskcentered] The Cost plateaus out after a few hundred iterations, and it tends to a value higher than for \textit{Iris setosa}.
+\item[\textasteriskcentered] The Cost consistently falls after every iteration, although the fall is less later on.
+\end{itemize}
+
+\subsection{\textit{Iris versicolor} v Rest Classifier}
+\subsubsection{Observed Data}
+\underline{\textbf{From Training}}\\\\
+Initial Cost = 78.278; \hspace{12pt} Final Cost= 60.6\\\\
+\underline{\textbf{From Testing}}\\\\
+Correct Examples: 22/30  (73\%)\\
+Incorrect Examples 8/30  (27\%)\\\\
+
+\begin{tabular}{l|l|c|c|c}
+\multicolumn{2}{c}{}&\multicolumn{2}{c}{True Class}&\\
+\cline{3-4}
+\multicolumn{2}{c|}{}&One&Rest&\multicolumn{1}{c}{Total}\\
+\cline{2-4}
+\multirow{2}{*}{Predicted Class} & One & $3$ & $7$ & $10$\\
+\cline{2-4}
+& Rest & $1$ & $19$ & $20$\\
+\cline{2-4}
+\multicolumn{1}{c}{} & \multicolumn{1}{c}{Total} & \multicolumn{1}{c}{$4$} & \multicolumn{    1}{c}{$26$} & \multicolumn{1}{c}{$30$}\\
+\end{tabular}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{1k_logitVan_versicolor.png}
+    \caption{Graph of first 1k iterations of training}
+    \label{fig:1k_logitVan_versicolor}
+\end{figure}
+
+\subsubsection{Conclusions}
+\begin{itemize}
+\item[\textasteriskcentered] The cost reduces appreciably only for a few starting iterations.
+\item[\textasteriskcentered] The cost plateaus out far earlier than for 1. Iris setosa or 2. Iris virginica
+\item[\textasteriskcentered] The total reduction in cost is minimal overall and does not tend to improve with more iterations.
+\end{itemize}
+
+\vspace{5pc}
+\section{Experiment 2}
+
+\subsection{Ideation}
+\begin{itemize}
+\item[\textasteriskcentered] In Gradient Descent, the size of the update step is proportional to the magnitude of the gradient of the Cost Function [[del theta = -alpha*grad(Th): quote this from earlier section here]].
+\item[\textasteriskcentered] Therefore, as the magnitude of Cost and that of it’s gradient fell in the previous experiment, the size of the update step became smaller and smaller until finally, towards the end of the training, the update step size was negligible.
+\item[\textasteriskcentered] How can this effect be counteracted? How to ensure that the update step size does not become negligible?
+\end{itemize}
+
+\subsection{Approach}
+For the following experiment, the learning rate was made adjustable. The value of $\alpha$ was increased as the value of Cost fell, in three different ways. The objective was to see how far and how fast the cost would fall as compared to Experiment 1a, where $\alpha$ was a constant. 
+
+A scaling factor(S.F.) was used in the updation of $\alpha$: every time the cost fell by a factor of S.F. $\alpha$ would be increased by a factor of S.F.
+
+Thus, with $\alpha_{start}=0.1$, the following update of $\alpha$ was run after every iteration:
+\begin{equation}\label{alphaUpdate}
+    \alpha = \alpha_{start} (S.F)^{\lfloor\log(\frac{J_init}{J}\rfloor}
+\end{equation}
+
+Three values of S.F were used:\; \emph{S.F = \{2, 5, 10\}}
+\subsection{Observed Data}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{1k_logit2_setosa.png}
+    \caption{Falling Cost (with S.F = 2}
+    \label{fig:1k_logit2_setosa}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{1k_logit5_setosa.png}
+    \caption{Falling Cost (with S.F = 5}
+    \label{fig:1k_logit5_setosa}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{1k_logit10_setosa.png}
+    \caption{Falling Cost (with S.F = 10}
+    \label{fig:1k_logit10_setosa}
+\end{figure}
+
+The following tables compare the three values of S.f with each other.
+
+For the sake of generalization, the previous experiment can be said to have S.F=$\infty$
+
+\begin{table}[H] \label{tbl:alpha100}
+\begin{tabular}{lllll}
+S.F & $\alpha$ after 100 iter. & Cost after 100 iter. &  &  \\
+$\infty$            & 0.1                               & 6.88                 &  &  \\
+10           & 1.0                               & 3.002                &  &  \\
+5            & 2.5                               & 1.007                &  &  \\
+2            & 51.2                              & 0.142                &  & 
+\end{tabular}
+\end{table}
+
+\begin{table}[H] \label{tbl:alpha100}
+\begin{tabular}{lllll}
+S.F & No of iterations till Cost \textless 0.1 & No of iterations till Cost \textless 0.01 &  &  \\
+$\infty$           & N.A                                      & N.A                                       &  &  \\
+10           & 286                                      & 444                                       &  &  \\
+5            & 178                                      & 270                                       &  &  \\
+2            & 103                                      & 162                                       &  & 
+\end{tabular}
+\end{table}
+
+The graph of Cost vs No. of Iterations was plotted for the first 100 iterations to compare the standard Logistic algorithm with the 3 versions proposed here:
+\begin{figure}[H]
+    \centering
+    \label{fig:all_4_for_setosa}
+    \includegraphics[width=0.8\textwidth]{all_4_for_setosa.png}
+    \caption{}
+\end{figure}
+
+Since the intent behind this experiment was to negate the update step becoming negligible in the later stages, the following graph was plotted which depicts the decrease in cost for 50 update steps after 500 iterations have been completed, comparing these values for the original Logistic algorithm and the 3 others proposed here.
+\begin{figure}[H]
+    \centering
+    \label{fig:50_at_500_for_all_on_setosa}
+    \includegraphics[width=0.8\textwidth]{50_at_500_for_all_on_setosa.png}
+    \caption{}
+\end{figure}
+
+\subsection{Conclusions}
+\begin{itemize}
+    \item[\textasteriskcentered] In all cases, the cost fell faster than in Experiment 1, where $\alpha$ was a constant. Hence, these changes have led to an improved Logistic Regression algorithm, as was expected in the Ideation section of this experiment.
+    \item[\textasteriskcentered] Introducing any scaling factor leads to dramatic improvements over the standard Logistic algorithm.
+    \item[\textasteriskcentered] From Figure \ref{fig:all_4_for_setosa}, the smaller the value of the Scale Factor, the better the performance of the algorithm.
+    \item[\textasteriskcentered] From Figure \ref{fig:50_at_500_for_all_on_setosa}, there were dramatic improvements to the algorithms performance in later stages of training. Lower S.F performed better here.
+\end{itemize}
+
+\centering \textbf{**End of Logistic Regression (Part 2)**}
+\end{document}
