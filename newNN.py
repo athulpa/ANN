@@ -14,34 +14,6 @@ convDict = {
 'Iris-versicolor':2
 }
 
-# Uses rept to do a basic_fit 100 times, and performs all this for size of hidden layer = 'start' : 'stop'
-def linsearch(start=1, stop=15):
-    accs = [ ]
-    cmtrs = [ ]
-    cmtss = [ ]
-    for i in range(start, stop+1):
-        print('\n\nHIDDEN LAYERS SHAPE: [..', i,'..]', sep='')
-        vals = rept([i], 100)
-        accs.append((vals[0],vals[1]))
-        cmtrs.append(vals[2])
-        cmtss.append(vals[3])
-    return accs, cmtrs,cmtss
-
-
-# Uses rept to do a basic_fit 100 times, and performs all this for 2 hidden layers,
-# whose sizes vary according to the inputs to this fn.
-def quadsearch(h1_start=1, h1_stop=10, h2_start=1, h2_stop=10):
-    accs = np.zeros((h1_stop+1-h1_start, h2_stop+1-h2_start, 2))
-    cmtrs = np.zeros((h1_stop+1-h1_start, h2_stop+1-h2_start, 3, 3))
-    cmtss = np.zeros((h1_stop+1-h1_start, h2_stop+1-h2_start, 3, 3))
-    for i in range(h1_start, h1_stop+1):
-        for j in range(h2_start, h2_stop+1):
-            print('\n\nHIDDEN LAYERS SHAPE: [..', i,', ', j, '..]', sep='')
-            vals = rept([i, j], 100)
-            accs[i-h1_start][j-h2_start] = np.array((vals[0],vals[1]))
-            cmtrs[i-h1_start][j-h2_start] = vals[2]
-            cmtss[i-h1_start][j-h2_start] = vals[3]
-    return accs, cmtrs, cmtss
 
 # Repeats the run 'cycles' no of time to get the average metrics.
 def rept(ls, cycles=25, alpha = 0.003, MaxIter=1000):
@@ -122,4 +94,31 @@ def confmat(nn, ins, outs, verbose=True):
         print('Confusion Matrix:\n', cm)
     
     return cm, acc
-        
+
+# Uses rept to do a basic_fit 100 times, and performs all this for size of hidden layer = 'start' : 'stop'
+def linsearch(start=1, stop=15):
+    accs = [ ]
+    cmtrs = [ ]
+    cmtss = [ ]
+    for i in range(start, stop+1):
+        print('\n\nHIDDEN LAYERS SHAPE: [..', i,'..]', sep='')
+        vals = rept([i], 100)
+        accs.append((vals[0],vals[1]))
+        cmtrs.append(vals[2])
+        cmtss.append(vals[3])
+    return accs, cmtrs,cmtss
+    
+# Uses rept to do a basic_fit 100 times, and performs all this for 2 hidden layers,
+# whose sizes vary according to the inputs to this fn.
+def quadsearch(h1_start=1, h1_stop=10, h2_start=1, h2_stop=10):
+    accs = np.zeros((h1_stop+1-h1_start, h2_stop+1-h2_start, 2))
+    cmtrs = np.zeros((h1_stop+1-h1_start, h2_stop+1-h2_start, 3, 3))
+    cmtss = np.zeros((h1_stop+1-h1_start, h2_stop+1-h2_start, 3, 3))
+    for i in range(h1_start, h1_stop+1):
+        for j in range(h2_start, h2_stop+1):
+            print('\n\nHIDDEN LAYERS SHAPE: [..', i,', ', j, '..]', sep='')
+            vals = rept([i, j], 100)
+            accs[i-h1_start][j-h2_start] = np.array((vals[0],vals[1]))
+            cmtrs[i-h1_start][j-h2_start] = vals[2]
+            cmtss[i-h1_start][j-h2_start] = vals[3]
+    return accs, cmtrs, cmtss
